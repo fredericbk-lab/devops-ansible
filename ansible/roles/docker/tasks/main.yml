@@ -1,0 +1,12 @@
+- name: Installer Docker (Ubuntu repo)
+  apt:
+    name:
+      - docker.io
+    state: present
+    update_cache: yes
+
+- name: Activer et démarrer Docker
+  service:
+    name: docker
+    state: started
+    enabled: true

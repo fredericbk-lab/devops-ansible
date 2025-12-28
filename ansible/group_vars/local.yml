@@ -1,0 +1,18 @@
+
+deploy_nginx_docker: true
+
+deploy_node_docker: true
+deploy_node_physical: true
+
+deploy_flask_docker: true
+deploy_flask_physical: true
+
+nginx_port: 8080
+
+node_port: 3000
+node_physical_port: 3001
+
+flask_port: 5000
+flask_physical_port: 5001
+
+apps_root: /opt/devops-local

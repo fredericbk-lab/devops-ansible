@@ -1,0 +1,16 @@
+- name: Copier app nginx
+  copy:
+    src: ../../../../apps/nginx/
+    dest: "{{ apps_root }}/nginx/"
+    mode: "0755"
+
+- name: Lancer Nginx container
+  community.docker.docker_container:
+    name: nginx_demo
+    image: nginx:alpine
+    state: started
+    restart_policy: always
+    ports:
+      - "{{ nginx_port }}:80"
+    volumes:
+      - "{{ apps_root }}/nginx/index.html:/usr/share/nginx/html/index.html:ro"

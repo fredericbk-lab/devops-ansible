@@ -1,0 +1,30 @@
+- name: Copier app node
+  copy:
+    src: ../../../../apps/node/
+    dest: "{{ apps_root }}/node/"
+    mode: "0755"
+
+- name: Build image node
+  community.docker.docker_image:
+    name: node_demo
+    tag: "latest"
+    source: build
+    build:
+      path: "{{ apps_root }}/node"
+
+#- name: S'assurer que node_demo est supprimé avant relance
+#  community.docker.docker_container:
+#    name: node_demo
+#    state: absent
+#  ignore_errors: true
+
+
+- name: Run container node
+  community.docker.docker_container:
+    name: node_demo
+    image: node_demo:latest
+    state: started
+    restart_policy: always
+    recreate: false
+    ports:
+      - "{{ node_port }}:3000"

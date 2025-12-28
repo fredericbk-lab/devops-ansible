@@ -1,0 +1,22 @@
+- name: DevOps local - Provision & Deploy
+  hosts: local
+  become: true
+
+  roles:
+    - common
+    - docker
+
+    - role: nginx_docker
+      when: deploy_nginx_docker
+
+    - role: node_docker
+      when: deploy_node_docker
+
+    - role: node_physical
+      when: deploy_node_physical
+
+    - role: flask_docker
+      when: deploy_flask_docker
+
+    - role: flask_physical
+      when: deploy_flask_physical

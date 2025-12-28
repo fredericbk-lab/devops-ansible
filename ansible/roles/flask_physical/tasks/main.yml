@@ -1,0 +1,53 @@
+- name: Copier app flask physique
+  copy:
+    src: ../../../../apps/flask/
+    dest: "{{ apps_root }}/flask-physical/"
+    mode: "0755"
+
+- name: Créer venv
+  command: python3 -m venv venv
+  args:
+    chdir: "{{ apps_root }}/flask-physical"
+    creates: "{{ apps_root }}/flask-physical/venv"
+  
+- name: Dépendances Python pour venv/pip
+  apt:
+    name:
+      - python3-venv
+      - python3-pip
+    state: present
+    update_cache: true
+  become: true
+
+
+- name: Installer requirements dans venv
+  pip:
+    requirements: "{{ apps_root }}/flask-physical/requirements.txt"
+    virtualenv: "{{ apps_root }}/flask-physical/venv"
+    virtualenv_command: python3 -m venv
+
+- name: Créer service systemd flask (gunicorn)
+  copy:
+    dest: /etc/systemd/system/flask-demo.service
+    content: |
+      [Unit]
+      Description=Flask Demo (Physical)
+      After=network.target
+
+      [Service]
+      WorkingDirectory={{ apps_root }}/flask-physical
+      ExecStart={{ apps_root }}/flask-physical/venv/bin/gunicorn -b 0.0.0.0:{{ flask_physical_port }} app:app
+      Restart=always
+
+      [Install]
+      WantedBy=multi-user.target
+
+- name: Reload systemd
+  systemd:
+    daemon_reload: true
+
+- name: Activer + démarrer flask-demo
+  systemd:
+    name: flask-demo
+    enabled: true
+    state: started

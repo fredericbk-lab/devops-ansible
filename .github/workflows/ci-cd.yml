@@ -1,0 +1,43 @@
+name: CI-CD Ansible Local
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Ansible + lint
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install ansible ansible-lint yamllint
+          ansible-galaxy collection install community.docker
+
+      - name: Lint
+        run: |
+          ansible-lint ansible/site.yml
+          yamllint .
+
+      - name: Syntax check
+        run: |
+          ansible-playbook -i ansible/inventory.ini ansible/site.yml --syntax-check
+
+  cd_local:
+    # Déploiement uniquement sur runner installé sur ta machine physique
+    runs-on: self-hosted
+    needs: ci
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Ansible deps
+        run: |
+          ansible-galaxy collection install community.docker
+
+      - name: Deploy local
+        run: |
+          cd ansible
+          ansible-playbook -i inventory.ini site.yml

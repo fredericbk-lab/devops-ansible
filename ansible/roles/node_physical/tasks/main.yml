@@ -1,0 +1,49 @@
+- name: Installer Node.js (Ubuntu repo)
+  apt:
+    name: nodejs
+    state: present
+    update_cache: yes
+
+- name: Installer npm
+  apt:
+    name: npm
+    state: present
+
+- name: Copier app node physique
+  copy:
+    src: ../../../../apps/node/
+    dest: "{{ apps_root }}/node-physical/"
+    mode: "0755"
+
+- name: Installer dépendances npm
+  command: npm install
+  args:
+    chdir: "{{ apps_root }}/node-physical"
+  changed_when: false
+
+- name: Créer service systemd node
+  copy:
+    dest: /etc/systemd/system/node-demo.service
+    content: |
+      [Unit]
+      Description=Node Demo (Physical)
+      After=network.target
+
+      [Service]
+      WorkingDirectory={{ apps_root }}/node-physical
+      ExecStart=/usr/bin/node {{ apps_root }}/node-physical/server.js
+      Restart=always
+      Environment=PORT={{ node_physical_port }}
+
+      [Install]
+      WantedBy=multi-user.target
+
+- name: Reload systemd
+  systemd:
+    daemon_reload: true
+
+- name: Activer + démarrer node-demo
+  systemd:
+    name: node-demo
+    enabled: true
+    state: started

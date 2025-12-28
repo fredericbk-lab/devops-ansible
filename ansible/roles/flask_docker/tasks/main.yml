@@ -1,0 +1,22 @@
+- name: Copier app flask
+  copy:
+    src: ../../../../apps/flask/
+    dest: "{{ apps_root }}/flask/"
+    mode: "0755"
+
+- name: Build image flask
+  community.docker.docker_image:
+    name: flask_demo
+    tag: "latest"
+    source: build
+    build:
+      path: "{{ apps_root }}/flask"
+
+- name: Run container flask
+  community.docker.docker_container:
+    name: flask_demo
+    image: flask_demo:latest
+    state: started
+    restart_policy: always
+    ports:
+      - "{{ flask_port }}:5000"
