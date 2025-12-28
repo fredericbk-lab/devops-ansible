@@ -112,7 +112,7 @@ curl http://localhost:5001   # Flask Physique
 
 ---
 
-## Ihdempotence (principe DevOps)
+## Idempotence (principe DevOps)
 
 Le playbook est **idempotent** :
 Une exécution répétée ne provoque **aucune modification inutile**.
@@ -183,7 +183,7 @@ fred ALL=(ALL) NOPASSWD:ALL
 
 ---
 
-## 🚧 Limites & perspectives
+## Limites & perspectives
 
 ### Limites
 
