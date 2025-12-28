@@ -1,4 +1,4 @@
-name: CI-CD Ansible Local
+name: DevOps Local Ansible CI/CD
 
 on:
   push:
@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Ansible + lint
+      - name: Install tooling
         run: |
           python3 -m pip install --upgrade pip
           pip install ansible ansible-lint yamllint
@@ -27,17 +27,17 @@ jobs:
           ansible-playbook -i ansible/inventory.ini ansible/site.yml --syntax-check
 
   cd_local:
-    # Déploiement uniquement sur runner installé sur ta machine physique
     runs-on: self-hosted
     needs: ci
+    if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Ansible deps
+      - name: Install collection
         run: |
           ansible-galaxy collection install community.docker
 
-      - name: Deploy local
+      - name: Deploy (local machine)
         run: |
           cd ansible
           ansible-playbook -i inventory.ini site.yml
